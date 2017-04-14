@@ -1,0 +1,19 @@
+maven
+
+Build project for eclipse
+mvn eclipse:eclipse
+
+
+In eclipse go to file>>Import Existing Project into workspace
+
+run tests
+
+  mvn test
+git
+
+  download stuff
+    git pull
+
+  see what changed
+    git status 
+

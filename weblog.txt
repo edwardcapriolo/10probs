@@ -1,0 +1,29 @@
+CREATE TABLE `access_kog`(
+  `host` string COMMENT 'from deserializer', 
+  `identity` string COMMENT 'from deserializer', 
+  `user` string COMMENT 'from deserializer', 
+  `time` string COMMENT 'from deserializer', 
+  `request` string COMMENT 'from deserializer', 
+  `status` string COMMENT 'from deserializer', 
+  `size` string COMMENT 'from deserializer', 
+  `referer` string COMMENT 'from deserializer', 
+  `agent` string COMMENT 'from deserializer')
+ROW FORMAT SERDE 
+  'org.apache.hadoop.hive.contrib.serde2.RegexSerDe' 
+WITH SERDEPROPERTIES ( 
+  'input.regex'='([^ ]*) ([^ ]*) ([^ ]*) (-|\\[[^\\]]*\\]) ([^ \"]*|\"[^\"]*\") (-|[0-9]*) (-|[0-9]*)(?: ([^ \"]*|\"[^\"]*\") ([^ \"]*|\"[^\"]*\"))?', 
+  'output.format.string'='%1$s %2$s %3$s %4$s %5$s %6$s %7$s %8$s %9$s') 
+STORED AS INPUTFORMAT 
+  'org.apache.hadoop.mapred.TextInputFormat' 
+OUTPUTFORMAT 
+  'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+LOCATION
+  'file:/usr/local/var/log/apache2'
+TBLPROPERTIES (
+  'COLUMN_STATS_ACCURATE'='false', 
+  'numFiles'='0', 
+  'numRows'='-1', 
+  'rawDataSize'='-1', 
+  'totalSize'='0', 
+  'transient_lastDdlTime'='1492213658')
+

@@ -1,0 +1,10 @@
+cat sites/site.txt 
+bin/crawl  sites crawl 1
+bin/nutch webgraph -segmentDir crawl/segments -webgraphdb a
+bin/nutch linkrank -webgraphdb a
+
+bin/nutch domainstats crawl/crawldb dstat domain
+
+/Users/ecapriolo/Downloads/hadoop-2.8.0_local/bin/hadoop  dfs -text a/nodes/part-00000/data
+
+/Users/ecapriolo/Downloads/hadoop-2.8.0_local/bin/hadoop  dfs -text a/outlinks/current/part-00000/data 

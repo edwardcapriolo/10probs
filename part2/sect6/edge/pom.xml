@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.edwardcapriolo</groupId>
+  <artifactId>edgy</artifactId>
+  <version>0.0.0-SNAPSHOT</version>
+
+  <properties>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
+    <encoding>UTF-8</encoding>
+    <scala.tools.version>2.11</scala.tools.version>
+    <scala.version>2.11.8</scala.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>2.11.8</version>
+      <scope>provided</scope>
+    </dependency>
+
+   <dependency>
+      <groupId>marvingroup</groupId>
+      <artifactId>marvin-frame</artifactId>
+      <version>1.5.5</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/marvin/framework/marvin_1.5.5.jar</systemPath>
+   </dependency>
+<!-- marvin/framework/marvin_1.5.5.jar -->
+<!--
+    <dependency>
+      <groupId>com.sksamuel.scrimage</groupId>
+      <artifactId>scrimage-filters_2.11</artifactId>
+      <version>2.1.8</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sksamuel.scrimage</groupId>
+      <artifactId>scrimage-core_2.11</artifactId>
+      <version>2.1.8</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sksamuel.scrimage</groupId>
+      <artifactId>scrimage-io-extra_2.11</artifactId>
+      <version>2.1.8</version>
+    </dependency>
+-->
+    <!-- cassandra -->
+    <dependency>
+       <groupId>com.datastax.spark</groupId>
+       <artifactId>spark-cassandra-connector_2.11</artifactId>
+       <version>2.0.0-RC1</version>
+    </dependency>
+
+    <!-- spark libs provided -->
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-core_2.11</artifactId>
+      <version>2.0.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-hive_2.11</artifactId>
+      <version>2.0.2</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- You need this if you want to do S3 locally but qubole provides this in the scala libs in prod for free  -->
+    <!--
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-aws</artifactId>
+      <version>2.6.5</version>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>org.scalatest</groupId>
+      <artifactId>scalatest_2.11</artifactId>
+      <version>3.0.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-mllib_2.11</artifactId>
+      <version>2.0.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-sql_2.11</artifactId>
+      <version>2.0.2</version>
+    </dependency> 
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>src/main/scala</directory>
+      </resource>
+     <resource>
+        <directory>src/test/scala</directory>
+     </resource>
+    </resources>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>net.alchim31.maven</groupId>
+          <artifactId>scala-maven-plugin</artifactId>
+          <version>3.2.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.0.2</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+
+    <!-- This runs the scala tests during mvn:test -->
+    <plugin>
+      <groupId>org.scalatest</groupId>
+      <artifactId>scalatest-maven-plugin</artifactId>
+      <version>1.0</version>
+      <configuration>
+        <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+        <junitxml>.</junitxml>
+        <filereports>WDF TestSuite.txt</filereports>
+      </configuration>
+      <executions>
+        <execution>
+          <id>test</id>
+          <goals>
+            <goal>test</goal>
+          </goals>
+        </execution>
+     </executions>
+   </plugin>
+
+      <plugin>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>scala-compile-first</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>add-source</goal>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>scala-test-compile</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- This builds a jar without the provided libs -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <exclude>log4j.properties</exclude>
+                    <exclude>logback.xml</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <outputFile>${project.build.directory}/nostrabidus-train-shade-${project.version}.jar</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+</project>

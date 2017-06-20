@@ -1,0 +1,25 @@
+graph = JanusGraphFactory.open('conf/janusgraph-cassandra.properties')
+GraphOfTheGodsFactory.load(graph)
+g = graph.traversal()
+
+
+g.V().has('name').values('name')
+g.V().has('name', 'hercules').out('father').values('name')
+
+Recursive queries
+g.V().has('name', 'hercules').repeat(out('father')).emit().values('name')
+
+
+writeGraphConf = new BaseConfiguration()
+writeGraphConf.setProperty("gremlin.graph", "org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph")
+writeGraphConf.setProperty("gremlin.tinkergraph.graphFormat", "gryo")
+writeGraphConf.setProperty("gremlin.tinkergraph.graphLocation", "/tmp/tinkergraph.kryo")
+modern = TinkerFactory.createModern()
+blvp = BulkLoaderVertexProgram.build().
+bulkLoader(OneTimeBulkLoader).
+writeGraph(writeGraphConf).create(modern)
+modern.compute().workers(1).program(blvp).submit().get()
+
+graph2 = GraphFactory.open(writeGraphConf)
+g2 = graph2.traversal()
+g2.V().valueMap()
